@@ -25,3 +25,5 @@ overlays/
 ./.gitattributes
 ./.gitignore
 ./.travis.yml
+.bzr
+.bzrignore
