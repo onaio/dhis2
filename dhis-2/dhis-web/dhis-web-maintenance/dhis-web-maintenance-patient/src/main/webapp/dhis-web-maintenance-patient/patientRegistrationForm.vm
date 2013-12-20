@@ -1,0 +1,82 @@
+<h3>$i18n.getString( "patient_registration_form_management" ) #openHelp( "person_registration_form" )</h3>
+
+<table class='mainPageTable'>
+	#set($display = 'block')
+	#foreach( $registrationForm in $registrationForms )
+		#if( $!registrationForm.program )
+		#else
+			#set($display = 'none')
+		#end
+	#end
+  <tr>
+    <td style="vertical-align:top" colspan='2'>
+		<table class="listTable" id='formList'>
+			  <col>   
+			  <col width="100">
+			<thead>			  
+			  <tr>  
+				<th>$i18n.getString( "program" )</th>
+				<th class="{sorter: false}">$i18n.getString( "operations" )</th>
+			  </tr>
+			</thead>
+			  <tbody class="list">
+				#set($hasCommonForm = 'false')
+				#foreach( $registrationForm in $registrationForms )
+				  <tr id="tr${registrationForm.program.id}">
+					<td>
+						#if($registrationForm.program)
+							$encoder.htmlEncode( $registrationForm.program.name )
+						#else
+							$i18n.getString('no_program')
+							#set($hasCommonForm = 'true')
+						#end	
+					</td>					
+					<td style="text-align:center">
+					  <a href="javascript:updateNewForm($registrationForm.id, '$!registrationForm.program.id')" title="$i18n.getString( 'edit' )"><img src="../images/edit_layout.png" alt="$i18n.getString( 'design_data_entry_form' )"></a>
+					  <a href="javascript:removeRegistrationForm( '$!registrationForm.program.id', '$!encoder.jsEncode( $registrationForm.program.name )')" title="$i18n.getString( "remove" )"><img id='active_$registrationForm.program.id' src="../images/delete.png" alt="$i18n.getString( 'remove' )"></a>
+					  <img id='define_$registrationForm.program.id' style='display:none;' src='../images/delete-denied.png' title='$i18n.getString("remove")'>
+					</td>
+				  </tr>
+				#end
+				
+				#foreach($program in $programs)
+					#set($hasForm = false)
+					#foreach( $registrationForm in $registrationForms )
+						#if($registrationForm.program.id==$program.id)
+							#set($hasForm = true)
+						#end
+					#end
+					
+					#if($hasForm == false)
+						<tr id="tr${registrationForm.id}">
+							<td>$encoder.htmlEncode( $program.name )</td> 	
+							<td style="text-align:center">
+								<a href="javascript:addNewForm($program.id)" title="$i18n.getString( 'design_data_entry_form' )"><img src="../images/edit_layout.png" alt="$i18n.getString( 'design_data_entry_form' )"></a>
+								<img src='../images/delete-denied.png' title='$i18n.getString("remove")'>
+							</td>
+						</tr>
+					#end
+				#end
+				#if($hasCommonForm=='false')
+				 <tr id="tr${registrationForm.id}">
+					<td>$i18n.getString('no_program')</td> 			
+					<td style="text-align:center">
+					  <a href="javascript:addNewForm('')" title="$i18n.getString( 'design_data_entry_form' )"><img src="../images/edit_layout.png" alt="$i18n.getString( 'design_data_entry_form' )"></a>
+					  <img src='../images/delete-denied.png' title='$i18n.getString("remove")'>
+					</td>
+				</tr>
+				#end
+			  </tbody>
+        </table>
+		</td>
+	</tr>
+</table>
+
+<script type="text/javascript">
+	var i18n_confirm_delete = '$encoder.jsEscape( $i18n.getString( "confirm_delete_patient_registration_form" ) , "'" )';
+	var i18n_please_select = '[' + '$encoder.jsEscape( $i18n.getString( "please_select" ) , "'" )' + ']';
+	
+	tableSorter( 'formList' );
+	var sorting = [[0,0]];
+	$("#formList").trigger("sorton", [sorting]);
+</script>

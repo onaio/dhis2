@@ -1,0 +1,65 @@
+<script type="text/javascript">
+	jQuery(document).ready(function(){	
+		tableSorter( 'listTable' );	
+	});
+
+	var i18n_none = '$encoder.jsEscape( $i18n.getString( "none" ) , "'")';
+	var i18n_confirm_delete = '$encoder.jsEscape( $i18n.getString( "confirm_delete_sqlview" ) , "'")';
+</script>
+
+<h3>$encoder.htmlEncode( $i18n.getString( "sql_view_management" ) ) #openHelp( "sqlView" )</h3>
+<table class="mainPageTable" >
+	<tr>
+		<td style="vertical-align:top">
+			<table width="100%">
+				<tr>
+					<td>$i18n.getString( "filter_by_name" ): <form style="display:inline" action="none" onsubmit="return false"><div style="inline"><input type="text" onkeyup="filterValues( this.value )" style="width:300px"/></div></form></td>
+					<td align="right"><input type="button" value="$i18n.getString( 'add_new' )" onclick="window.location.href='showAddSqlViewForm.action'" style="width:100px"/></td>
+				</tr>
+			</table>
+			<table class="listTable" id="listTable">
+				<col/>			
+				<col width="150px"/>
+				<thead>		
+					<tr>
+						<th>$i18n.getString( "name" )</th>
+						<th class="{sorter: false}">$i18n.getString( "operations" )</th>
+					</tr>
+				</thead>
+				<tbody id="list">
+					#foreach( $sqlViewObject in $sqlViewObjectList )
+					<tr id="tr${sqlViewObject.id}">
+						<td onclick="showSqlViewDetails( $sqlViewObject.id )">$!encoder.htmlEncode( $sqlViewObject.name )</td>
+						<td><a href="javascript:runSqlViewQuery( $sqlViewObject.id )" title="$i18n.getString( 'run' )"><img src="../images/start_process.png" alt="$i18n.getString( 'run' )"/></a>
+						<a href="javascript:showDataSqlViewForm( $sqlViewObject.id )" title="$i18n.getString( 'show_sql_view' )"><img src="../images/view_sections.png" alt="$i18n.getString( 'view' )"/></a>
+						<a href="showUpdateSqlViewForm.action?id=$sqlViewObject.id" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"/></a>
+						<a href="javascript:removeSqlViewObject( $sqlViewObject.id, '$encoder.jsEncode( $sqlViewObject.name )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></a>
+						<a href="javascript:showSqlViewDetails( $sqlViewObject.id )" title="$i18n.getString( 'show_details' )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"/></a></td>
+					</tr>
+					#end
+				</tbody>                
+			</table>
+		</td>
+		<td id="detailsData">
+
+            <div id="detailsArea">
+                <div id="hideDetailsArea">
+					<a href="javascript:hideDetails()" title="$i18n.getString( 'hide_details' )"><img src="../images/hide.png" alt="$i18n.getString( 'hide_details' )"/></a>
+				</div>
+				<p><label>$i18n.getString( "name" ):</label><br/><span id="nameField"></span></p>
+				<p><label>$i18n.getString( "description" ):</label><br/><span id="descriptionField"></span></p>
+				<p><label>$i18n.getString( "sql_statement" ):</label><br/><span id="sqlQueryField"></span></p>
+			</div>
+			
+			<div id="warningArea">
+				<div id="hideDetailsArea">
+					<a href="javascript:hideWarning()" title="$i18n.getString( 'hide_warning' )"><img src="../images/hide.png" alt="$i18n.getString( 'hide_warning' )"/></a>
+				</div>
+				<p><span id="warningField"></span></p>
+			</div>
+
+		</td>
+	</tr>
+</table>
+
+<span id="message"></span>

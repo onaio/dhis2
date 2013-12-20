@@ -1,0 +1,1 @@
+{ "usernames": [#foreach( $username in $usernames )"$!encoder.jsonEncode("$username")"#if( $velocityCount < $usernames.size() ),#end #end]}

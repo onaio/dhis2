@@ -1,0 +1,155 @@
+#macro( validate $type $require )
+  #if( $type == "NUMBER" )
+  	{validate:{ number:true #if($require), required:true #end }}
+  #elseif( $type == "string" )
+  	{validate:{ alphanumeric:true #if($require), required:true #end }}
+  #elseif( $require )
+  	{validate:{required:true}}
+  #end
+#end
+
+<script>
+	jQuery(document).ready(	function(){
+		jQuery("#patientForm").validate({
+			 meta:"validate"
+			,errorElement:"span"
+			,submitHandler: function(form)
+				{
+					validateUpdatePatient( false );
+				}
+			,beforeValidateHandler: function(form)
+				{
+					var dobType = $('#patientForm [id=dobType]').val();
+					if( dobType=='V' || dobType=='D' ) 
+					{
+						var birthDate = $('#patientForm [id=birthDate]').val();
+						if( birthDate != '' ){
+							$("#patientForm [id=memberValidator]").val(birthDate);
+						}
+					}else{
+						var age = $('#patientForm [id=age]').val();
+						$("#patientForm [id=memberValidator]").val(age);
+					}
+				}
+		});
+		
+		checkedDuplicate = false;
+		#if($!customRegistrationForm)
+		#else
+			datePickerValid( 'patientForm [id=deathDate]' );
+		#end
+		
+		addEventForPatientForm('patientForm');
+		if("$!patient.dobType" == 'A'){ 
+			var i18n_please_please_verify_birthday = '$encoder.jsEscape( $i18n.getString( "please_verify_birthday" ) , "'")';
+			jQuery('#patientForm [id=birthDate]').css("display","none");
+			alert(i18n_please_please_verify_birthday);
+		}
+		else{
+			#if($!customRegistrationForm)
+			#else
+				datePickerValid( 'patientForm [id=birthDate]' );
+			#end
+			
+			jQuery('#patientForm [id=age]').css("display","none");
+		}
+	});
+	
+	addRelationship = false;
+	hideById('registrationDateTR');
+	hideById('mainLinkLbl');
+	jQuery('[name=mainPagelink]').html(i18n_main_form_link);
+</script>
+
+<h3>
+	<a name="mainPagelink" href="javascript:onClickBackBtn();">$i18n.getString( 'patient_management' )</a>
+	&#8226; <a href="javascript:showPatientDashboardForm($!patient.id);">$i18n.getString( 'patient_dashboard' )</a>
+	&#8226; $i18n.getString( "update_patient" )
+</h3>
+<p>
+<form id="patientForm" name="patientForm" action="updatePatient.action" method="post" >
+<input type="hidden" id="representativeId" name="representativeId" value='$!patient.representative.id' /> 
+<input type="hidden" id="relationshipTypeId" name='relationshipTypeId' value="$!relationship.relationshipType.id"/>
+<input type="hidden" id="id" name="id" value="$patient.id">
+
+
+<table>	
+	#if($!customRegistrationForm)
+		<div id='barcodePatient'></div>
+	#elseif($!systemIdentifier)
+		<tr>
+			<th colspan="2" class="heading-column">$i18n.getString( "system_identifier" )</th>
+		</tr>	
+		<tr>
+			<td colspan='2'><br><div id='barcodePatient'></div></td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+		</tr>	
+	#end
+	
+	#parse( "/dhis-web-caseentry/patientForm.vm" )
+	
+	<tr>
+		<td></td>
+		<td>
+			<input type="submit" class='button' value="$i18n.getString( 'update' )" />
+			<input type='button' class="button" value="$i18n.getString( 'cancel' )" onclick="backPreviousPage( $patient.id )" />
+		</td>
+	</tr>
+</table>
+
+</form> 	
+
+<div id="representativeInfo" class='hidden text-column'>
+	<table>
+		<tr>
+			<td class="bold text-column">$i18n.getString("full_name"): </td>
+			<td>$!encoder.htmlEncode($!representative.name)</td>
+		</tr>
+		<tr>
+			<td class="bold text-column">$i18n.getString("relationship"): </td>
+			<td>$encoder.htmlEncode($!relationship.relationshipType.aIsToB)</td>
+		</tr>
+		<tr>
+			<td class="bold text-column">$i18n.getString("gender"): </td>
+			<td>$!representative.gender</td>
+		</tr>
+		<tr>
+			<td class="bold text-column">$i18n.getString("date_of_birth"): </td>
+			<td>$!format.formatDate( $!representative.birthDate )</td>
+		</tr>
+		<tr>
+			<td class="bold text-column">$i18n.getString("age"): </td>
+			<td> $!representative.getAge() </td>
+		</tr>
+		#foreach( $patientIdentifier in $representative.identifiers )
+		  <tr>  
+			<td class="bold text-column">#if( $patientIdentifier.identifierType )$patientIdentifier.identifierType.displayName: #else $i18n.getString("system_identifier"): #end</td>      
+			  <td> $!patientIdentifier.identifier </td>
+		   </tr>
+		#end
+		<tr>
+			<td class="bold text-column">$i18n.getString("enrolled_in_program"):</td>
+			<td>  
+				 #foreach( $program in $representative.programs )
+					$encoder.htmlEncode($program.displayName)
+					#if( $velocityCount > 1 )
+						<br>
+					#end
+				 #end  
+			</td>
+		</tr>
+	</table>
+</div>
+
+<script>
+	#foreach ( $idValue in $patient.identifiers )
+		#if( $!idValue.identifierType)
+		#else
+			systemIdentifier = "$idValue.identifier";
+		#end
+	#end
+	$("#barcodePatient").barcode(systemIdentifier, "ean13",{barWidth:2, barHeight:30});
+</script>
+

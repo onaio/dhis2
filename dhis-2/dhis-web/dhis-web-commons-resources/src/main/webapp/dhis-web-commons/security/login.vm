@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>$!encoder.htmlEncode( ${applicationTitle} )</title>
+        <meta name="description" content="DHIS 2">
+        <meta name="keywords" content="DHIS 2">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="../javascripts/jQuery/jquery.min.js"></script>
+        <script type="text/javascript" src="login.js"></script>
+        <link type="text/css" rel="stylesheet" href="../css/widgets.css">
+        <link type="text/css" rel="stylesheet" href="../css/login.css">
+    </head>
+    <body>
+    	<h1 style="display:none">$!encoder.htmlEncode( ${applicationTitle} )</h1>
+    	<div style="display:none">DHIS 2</div>
+        <div>       
+        #if ( $keyFlag )
+            <img id="flagArea" src="../flags/$!{keyFlagImage}">
+        #end
+        #if ( $applicationTitle )
+            <span id="titleArea">$!encoder.htmlEncode( ${applicationTitle} )</span>
+        #end        
+        #if ( $keyApplicationIntro )
+            <span id="introArea">$!{keyApplicationIntro}</span>
+        #end
+        </div>
+        #if ( $keyConfig.selfRegistrationAllowed() )
+        <div id="accountArea">
+        	<a id="createAccountButton" class="greenButtonLink" href="account.action">Create an account</a>
+        </div>
+        #end
+        <div id="loginField">
+            <div id="bannerArea"><a href="http://www.dhis2.org"><img src="logo_front.png" style="border:none"></a></div>
+            
+            <form id="loginForm" action="../../dhis-web-commons-security/login.action" method="post">
+                <div>
+                	<div id="signInLabel">Sign in</div>
+                    <div><input type="text" id="j_username" name="j_username" placeholder="Username"></div>
+                    <div><input type="password" id="j_password" name="j_password" autocomplete="off" placeholder="Password"></div>
+                </div>
+                <div id="submitDiv">
+                	<input id="submit" class="button" type="submit" value="Sign in">
+                </div>
+                #if( $keyAccountRecovery )
+                <div style="padding-bottom: 10px">
+                    <a id="forgotPasswordLink" href="recovery.action">Forgot password?</a>
+                </div>
+                #end
+                #if( $keyConfig.selfRegistrationAllowed() )
+                <div style="padding-bottom: 10px">                	
+                	<a id="createAccountLink" href="account.action">Create an account</a>
+                </div>
+                #end
+            </form>
+            #if( $failed == true )
+            <div id="loginMessage">Wrong username or password</div>
+            #end
+            #if ( $keyApplicationNotification )
+            <div id="notificationArea">$!{keyApplicationNotification}</div>
+            #end
+        </div>
+        <div id="footerArea">
+        	<span id="poweredByLabel">Powered by</span>
+        	<a href="http://www.dhis2.org">DHIS 2</a>&nbsp;
+        	<span id="applicationFooter">$!{keyApplicationFooter}</span>
+
+        	<select id="localeSelect" onchange="login.localeChanged()" style="margin-left: 30px">
+        		<option value="">[ Change language ]</option>
+        		#foreach( $locale in $availableLocales )
+        		<option value="${locale.language}">${locale.displayName}</option>
+		        #end
+	        </select>
+
+        </div>
+    </body>
+</html>

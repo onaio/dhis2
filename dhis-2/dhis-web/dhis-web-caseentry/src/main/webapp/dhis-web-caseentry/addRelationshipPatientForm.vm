@@ -1,0 +1,83 @@
+<script>
+	jQuery('#patientForm').ready(	function(){
+
+		addRelationship = true;
+		checkedDuplicate = false;
+		
+		jQuery("#patientForm").validate({
+			 meta:"validate"
+			,errorElement:"span"
+			,submitHandler: function(form)
+				{
+					validateAddRelationshipPatient();
+				}
+			,beforeValidateHandler: function(form)
+				{
+					var birthDate = $('#patientForm [id=birthDate]').val();
+					var age = $('#patientForm [id=age]').val();
+					if(age !=''){
+						$( "#patientForm [id=memberValidator]").val(age);
+					}else{
+						$( "#patientForm [id=memberValidator]").val(birthDate);
+					}
+				}
+		});
+		jQuery('#patientForm [id=fullName]').val("");
+		hideById('underAgeDiv');
+		hideById('representativeFormDiv');
+		jQuery('#patientForm [inherit=false]').val("");
+		jQuery('#patientForm [inherit=]').val("");
+		jQuery('#patientForm [id=healthWorkerId]').val("");
+		jQuery('#patientForm [id^="iden"]').val("");
+		hideById('patientForm [id=age]');
+
+		#if($!customRegistrationForm)
+		#else
+		datePickerValid( 'patientForm [id=birthDate]' );
+		#end
+		
+		addEventForPatientForm('patientForm');
+		jQuery('[name=mainPagelink]').html(i18n_main_form_link);
+	});		
+</script>
+
+<h5>
+	<a name="mainPagelink" href="javascript:onClickBackBtn();">$i18n.getString( 'patient_management' )</a>
+	&#8226; <a href="javascript:showPatientDashboardForm($!patient.id);">$i18n.getString( 'patient_dashboard' )</a>
+	&#8226; <a href="javascript:showRelationshipList( '$patient.id' )">$i18n.getString( "relationship_management" )</a>	
+</h5>
+<h3>
+	&raquo; <a href="javascript:showAddRelationship('$patient.id')" >$i18n.getString( 'seach_available_patient' )</a>
+	&#8226; $i18n.getString( 'add_new_patient' )
+</h3>
+																		
+<form id="patientForm" action="addRelationshipPatient.action" method="get" >
+<input type="hidden" id="relationshipId" name="relationshipId" value="$patient.id"/> 
+<input type="hidden" id="programStageInstanceId" name="programStageInstanceId" value="$!programStageInstanceId"/> 
+<table>	
+	<tr>
+		<td class='text-column'><label for="relationship_type">$i18n.getString("relationship_type")<em title="$i18n.getString( "required" )" class="required">*</em></label></td>
+		<td class="input-column">
+			<select name="relationshipTypeId" id="relationshipTypeId" class="{validate:{required:true}}" >
+				<option value="">[$i18n.getString( "please_select" )]</option>        
+				#foreach ($relationship in $relationshipTypes)
+					<option value="$relationship.id" relationshipFromA='true'>$!encoder.htmlEncode(${relationship.aIsToB}) $i18n.getString("of") $!encoder.htmlEncode($patient.name) ($!encoder.htmlEncode(${relationship.bIsToA}))</option>
+					<option value="$relationship.id" relationshipFromA='false'>$!encoder.htmlEncode(${relationship.bIsToA}) $i18n.getString("of") $!encoder.htmlEncode($patient.name) ($!encoder.htmlEncode(${relationship.aIsToB}))</option>
+				#end
+			</select>
+		</td>
+	</tr>
+	
+	#parse( "/dhis-web-caseentry/patientForm.vm" )
+
+	<tr><td><p></p></td></tr>
+	<tr>
+		<td></td>
+		<td>
+			<input type="submit" class='button' value="$i18n.getString( 'add' )" />
+			<input type="button" class='button' value="$i18n.getString( 'cancel' )" onclick="showRelationshipList($patient.id);">
+		</td>
+	</tr>
+</table>
+</form> 	
+

@@ -1,0 +1,13 @@
+#set($mark=false)
+#foreach( $aggregationCondition in $aggregationConditions )
+	<tr id="tr${aggregationCondition.id}" #alternate( $mark )>
+		<td onclick="javascript:showCaseAggregationDetails( $aggregationCondition.id )" >$encoder.htmlEncode( $aggregationCondition.displayName )</td>                
+		<td>
+		  <a href="showUpdateCaseAggregationForm.action?id=$aggregationCondition.id&dataSetId=$!dataSetId" title="$i18n.getString( "edit" )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"></a>
+		  <a href="javascript:translate( 'CaseAggregationCondition', '$aggregationCondition.id' )" title="$i18n.getString( 'translation_translate' )"><img src="../images/i18n.png" alt="$i18n.getString( 'translation_translate' )"/></a>  
+		  <a href="javascript:removeCaseAggregation( '$aggregationCondition.id', '$encoder.jsEncode( $aggregationCondition.displayName )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"></a>
+		  <a href="javascript:showCaseAggregationDetails( $aggregationCondition.id )" title="$i18n.getString( "show_details" )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"></a>
+		</td>
+	</tr>
+	#set($mark=!$mark)
+#end

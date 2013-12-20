@@ -1,0 +1,25 @@
+<div class="offset1 span10">
+    <div class="hero-unit">
+        <h2>Facility Registry Expansion Development</h2>
+
+        <p style="font-size: 0.8em;">The Open Facility Registry Service Project or FRED - "Facility Registry Expansion Development" will
+            model the benefits of an NHIS Health Information Exchange (HIE) and provide a roadmap for implementation of the full range of
+            NHIS components. The development and documentation of a Facility Registry Service (a master facilities list along with
+            documented methods of interoperability) will provide a common and replicable solution for integrated e/mHealth systems. In
+            collaboration with national entities,academia, solution providers, NGOs (NetHope members) and donors, we will develop a
+            standards-based service that reflect national policies and regulation, using the subset of the Facility Registry Service to
+            illustrate how the rest of the NHIS components can be similarly orchestrated. In a repeatable fashion, FRED will complete the
+            design, development, and reference implementation of a Facility Registry Service and prepare for its interoperability with
+            existing key e/mHealth tools in multiple countries during the next 9-12 months. FRED will provide an open source,
+            standards-based, repeatable approach to the implementation of a Facility Registry Service; it will at the same time accommodate
+            unique national requirements as well as allow for continuous and evolutionary improvements.
+        </p>
+
+        <p>
+            <a style="font-size: 0.8em;" class="btn btn-primary btn-large"
+               href="http://facilityregistry.org/">
+                Read the specification &raquo;
+            </a>
+        </p>
+    </div>
+</div>

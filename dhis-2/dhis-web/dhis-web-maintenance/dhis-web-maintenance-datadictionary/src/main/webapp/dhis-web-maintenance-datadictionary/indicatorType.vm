@@ -1,0 +1,84 @@
+<script type="text/javascript">
+	jQuery(document).ready(function(){	
+		tableSorter( 'listTable' );	
+	});
+
+	function showIndicatorTypeDetails( indicatorTypeId )
+	{
+	    jQuery.get( 'getIndicatorType.action', { id: indicatorTypeId },
+			function( json ) {				
+				setInnerHTML( 'nameField', json.indicatorType.name );
+				setInnerHTML( 'factorField', json.indicatorType.factor );
+
+				showDetails();
+		});
+	}
+
+	function removeIndicatorType( indicatorTypeId, indicatorTypeName )
+	{
+	    removeItem( indicatorTypeId, indicatorTypeName, i18n_confirm_delete, 'removeIndicatorType.action' );
+	}
+
+    var i18n_confirm_delete = '$encoder.jsEscape( $i18n.getString( "confirm_delete_indicator_type" ) , "'")';
+	var i18n_adding_indicator_type_failed = '$encoder.jsEscape( $i18n.getString( "adding_indicator_type_failed" ) , "'")';
+	var i18n_saving_indicator_type_failed = '$encoder.jsEscape( $i18n.getString( "saving_indicator_type_failed" ) , "'")';
+</script>
+
+<h3>$i18n.getString( "indicator_type_management" ) #openHelp( "indicatorType" )</h3>
+
+<table class="mainPageTable">
+	<tr>
+		<td style="vertical-align:top">
+			<table width="100%">
+				<tr>
+					<td>#filterDiv( "indicatorType" )</td>
+					<td colspan="4" style="text-align:right"><input type="button" value="$i18n.getString( 'add_new' )" onclick="window.location.href='showAddIndicatorTypeForm.action'" style="width:80px"></td>
+				</tr>
+			</table>
+			<table class="listTable" id="listTable">
+				<col/>
+				<col width="120px"/>				
+                <thead>				
+				<tr>
+					<th>$i18n.getString( "name" )</th>
+					<th class="{sorter: false}">$i18n.getString( "operations" )</th>
+				</tr>
+                </thead>
+				<tbody id="list">
+				#foreach( $indicatorType in $indicatorTypes )
+				<tr id="tr${indicatorType.id}">
+					<td onclick="javascript:showIndicatorTypeDetails( $indicatorType.id )">$encoder.htmlEncode( $indicatorType.displayName )</td>
+					<td style="text-align:right">
+						<a href="showUpdateIndicatorTypeForm.action?id=$indicatorType.id" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"/></a>
+						<a href="javascript:translate( 'IndicatorType', '$indicatorType.id' )" title="$i18n.getString( 'translation_translate' )"><img src="../images/i18n.png" alt="$i18n.getString( 'translation_translate' )"/></a>
+						<a href="javascript:removeIndicatorType( $indicatorType.id, '$encoder.jsEncode( $indicatorType.displayName )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></a>
+						<a href="javascript:showIndicatorTypeDetails( $indicatorType.id )" title="$i18n.getString( 'show_details' )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"/></a>
+					</td>
+				</tr>
+				#end
+				</tbody>
+			</table>
+			<p></p>
+			#parse( "/dhis-web-commons/paging/paging.vm" )
+
+		</td>
+		<td id="detailsData">
+
+            <div id="detailsArea">
+                <div id="hideDetailsArea">
+					<a href="javascript:hideDetails()" title="$i18n.getString( 'hide_details' )"><img src="../images/hide.png" alt="$i18n.getString( 'hide_details' )"/></a>
+				</div>
+				<p><label>$i18n.getString( "name"):</label><br/><span id="nameField"></span></p>
+				<p><label>$i18n.getString( "factor" ):</label><br/><span id="factorField"></span></p>
+			</div>
+
+			<div id="warningArea">
+                <div id="hideDetailsArea">
+                    <a href="javascript:hideWarning()" title="$i18n.getString( 'hide_warning' )"><img src="../images/hide.png" alt="$i18n.getString( 'hide_warning' )"/></a>
+                </div>
+                <p><span id="warningField"></span></p>
+            </div>
+
+		</td>
+	</tr>
+</table>

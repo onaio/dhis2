@@ -1,0 +1,10 @@
+#set( $size = $selectedUnits.size() )
+{ "selectedUnits": [
+#foreach( $unit in $selectedUnits )
+  {
+	"id":"${unit.id}",
+	"name":"$encoder.jsonEncode( ${unit.name} )",
+	"uid":"$encoder.jsonEncode( ${unit.uid} )"
+  }#if( $velocityCount < $size ),#end
+#end
+] }

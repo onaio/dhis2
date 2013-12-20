@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+  <!-- No -->
+
+  <bean id="org.hisp.dhis.pivot.action.NoAction"
+    class="org.hisp.dhis.pivot.action.NoAction" scope="prototype" />
+
+  <!-- Initialize -->
+
+  <bean id="org.hisp.dhis.pivot.action.InitializeAction"
+    class="org.hisp.dhis.pivot.action.InitializeAction"
+    scope="prototype">
+    <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+    <property name="dimensionService" ref="org.hisp.dhis.common.DimensionService" />
+    <property name="mappingService" ref="org.hisp.dhis.mapping.MappingService" />
+  </bean>
+
+  <!-- OrganisationUnit -->
+
+  <bean id="org.hisp.dhis.pivot.action.GetOrganisationUnitChildrenAction"
+    class="org.hisp.dhis.pivot.action.GetOrganisationUnitChildrenAction"
+    scope="prototype">
+    <property name="organisationUnitService"
+      ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+  </bean>
+
+</beans>

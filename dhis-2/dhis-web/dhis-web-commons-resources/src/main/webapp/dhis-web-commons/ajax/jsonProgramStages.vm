@@ -1,0 +1,10 @@
+#set( $size = $associations.size() )
+{ 
+	"programStages": [
+		#foreach( $association in $associations )
+		  {
+			"id":  ${association.id} ,
+			"name": "$!encoder.jsonEncode( ${association.displayName} )"
+		  }#if( $velocityCount < $size ),#end
+		#end]
+}

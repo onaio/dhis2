@@ -1,0 +1,8 @@
+<h2>$i18n.getString( "user" )&nbsp;</h2>
+<ul>
+	<li><a href="user.action">$i18n.getString( "user_by_orgunit" )&nbsp;</a></li>
+	<li><a href="alluser.action">$i18n.getString( "user" )&nbsp;</a></li>
+	<li><a href="alluser.action?selfRegistered=true">$i18n.getString( "self_registered_user" )&nbsp;</a></li>
+	<li><a href="allRole.action" title="$i18n.getString( "user_role" )">$i18n.getString( "user_role" )&nbsp;</a></li>
+    <li><a href="deleteCurrentUser.action" title="$i18n.getString( "delete_current_user" )">$i18n.getString( "delete_current_user" )</a></li>
+</ul>

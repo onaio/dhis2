@@ -1,0 +1,187 @@
+<script src="//maps.google.com/maps/api/js?sensor=false"></script>
+
+<script>
+    function updateMap(coordinates) {
+        if(!coordinates[0] || !coordinates[1])
+        {
+            noCoordinatesProvided();
+            return;
+        }
+
+        var latlng = new google.maps.LatLng(coordinates[1], coordinates[0]);
+
+        var options = {
+            zoom: 12,
+            center: latlng,
+            disableDefaultUI: true,
+            zoomControl: true,
+            mapTypeControl: true,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            mapTypeControlOptions: {
+              style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+            }
+        };
+
+        var map = new google.maps.Map(document.getElementById('mapTarget'), options);
+
+        var marker = new google.maps.Marker({
+            position: latlng,
+            map: map,
+            title: '$esc.escapeEcmaScript($entity.name)'
+        });
+    }
+
+    function noCoordinatesProvided() {
+        $( '#mapTarget' ).html( '<div style="text-align: center;">No coordinates provided.</div>' )
+                .parent().addClass( 'hidden-phone' );
+    }
+
+    $(function () {
+        var coordinates = JSON.parse("$entity.coordinates");
+
+        if (coordinates.length > 0) {
+            $('#facilityLatitude').val(coordinates[1]);
+            $('#facilityLongitude').val(coordinates[0]);
+
+            updateMap(coordinates);
+        } else {
+            noCoordinatesProvided();
+        }
+
+        $('#facilityForm').submit(function (e) {
+            e.preventDefault();
+            $('#facilitySubmit').attr('disabled', true).text('Saving');
+
+            $.get('$baseUrl/facilities/${entity.uuid}.json').success(function (data) {
+                delete data.createdAt;
+                delete data.updatedAt;
+                delete data.href;
+
+                data.name = $('#facilityName').val();
+                data.active = JSON.parse($('#facilityActive').val());
+
+                var lng = $('#facilityLongitude').val();
+                var lat = $('#facilityLatitude').val();
+
+                data.coordinates = [ lng, lat ];
+
+                data.properties = {};
+                data.properties.parent = $( '#facilityDhis2Parent' ).val();
+
+                var dhis2Code = $( '#facilityDhis2Code' ).val();
+
+                if ( dhis2Code.length > 0 ) {
+                    data.identifiers = [
+                        {
+                            'agency': 'DHIS2',
+                            'context': 'DHIS2_CODE',
+                            'id': dhis2Code
+                        }
+                    ]
+                }
+
+                var facilityDhis2DataSets = $( '#facilityDhis2DataSets :selected' );
+
+                if ( facilityDhis2DataSets.length > 0 ) {
+                    data.properties.dataSets = [];
+
+                    $.each( facilityDhis2DataSets, function ( idx, item ) {
+                        data.properties.dataSets.push( $( item ).val() );
+                    } );
+                }
+
+                $.ajax({
+                    url: '$baseUrl/facilities/${entity.uuid}',
+                    contentType: 'application/json; charset=UTF-8',
+                    type: 'PUT',
+                    data: JSON.stringify(data),
+                    dataType: 'json'
+                }).success(function (data) {
+                    updateMap([lng, lat]);
+
+                    $('#facilitySubmit').removeAttr('disabled').text('Save');
+                }).error(function (data) {
+                    $('#facilitySubmit').removeAttr('disabled').text('Save');
+                });
+            });
+        });
+    });
+</script>
+
+<div class="container-fluid">
+    <div class="span5 well" style="padding: 4px;">
+        <div style="height: 320px;" id="mapTarget"></div>
+    </div>
+
+    <div class="span6">
+        <form id="facilityForm">
+            #set( $inputSize = "span12")
+
+            <fieldset>
+                <legend>Facility</legend>
+
+                <label for="facilityID">UUID</label>
+                <input id="facilityID" disabled="disabled" type="text" class="$inputSize" value="$entity.uuid"/>
+
+                <label for="facilityName">Name</label>
+                <input #if(!$canUpdate)disabled#end id="facilityName" type="text" class="$inputSize" value="$esc.escapeHtml4($entity.name)"/>
+
+                <label for="facilityActive">Active</label>
+                <select id="facilityActive" #if(!$canUpdate)disabled#end class="$inputSize">
+                    <option value="true" #if($entity.active)selected#end>Yes</option>
+                    <option value="false" #if(!$entity.active)selected#end>No</option>
+                </select>
+
+                <label for="facilityLatitude">Latitude</label>
+                <input #if(!$canUpdate)disabled#end id="facilityLatitude" type="text" class="$inputSize" value=""/>
+
+                <label for="facilityLongitude">Longitude</label>
+                <input #if(!$canUpdate)disabled#end id="facilityLongitude" type="text" class="$inputSize" value=""/>
+
+                <fieldset>
+                    <legend>DHIS 2</legend>
+
+                    #foreach( $identifier in $entity.identifiers )
+                        #if( $identifier.context == "DHIS2_CODE" )
+                            #set( $dhis2Code = $identifier.id )
+                        #end
+                        #if( $identifier.context == "DHIS2_UID" )
+                            #set( $dhis2Uid = $identifier.id )
+                        #end
+                    #end
+
+                    <label for="facilityDhis2Uid">UID</label>
+                    <input disabled id="facilityDhis2Uid" type="text" class="$inputSize" value="$!esc.escapeHtml4($dhis2Uid)"/>
+
+                    <label for="facilityDhis2Code">Code</label>
+                    <input #if(!$canUpdate)disabled#end id="facilityDhis2Code" type="text" class="$inputSize" value="$!esc.escapeHtml4($dhis2Code)"/>
+
+                    #set( $dhis2Parent = $entity.properties.get('parent') )
+
+                    <label for="facilityDhis2Parent">Parent</label>
+                    <input #if(!$canUpdate)disabled#end id="facilityDhis2Parent" type="text" class="$inputSize" value="$!esc.escapeHtml4($dhis2Parent)"/>
+
+                    #set( $dhis2DataSets = $entity.properties.get('dataSets') )
+
+                    <label for="facilityDhis2DataSets">Data Sets</label>
+                    <select #if(!$canUpdate)disabled#end id="facilityDhis2DataSets" class="$inputSize" multiple="multiple">
+                    #foreach( $dataSet in $dataSets )
+                        <option value="$dataSet.uid" #if( $dhis2DataSets.contains( $dataSet.uid ))selected="selected"#end>$!esc.escapeHtml4($dataSet.displayName)</option>
+                    #end
+                    </select>
+
+                </fieldset>
+            </fieldset>
+
+            <button #if(!$canUpdate)disabled#end type="submit" id="facilitySubmit" class="btn btn-info">Save</button>
+            <a id="back-button" class="btn btn-inverse pull-right" href="../facilities">Back</a>
+        </form>
+    </div>
+
+    <div class="span1">
+        <button #if(true)disabled#end style="width: 42px;" class="deleteButton btn btn-mini btn-danger pull-right" title="Delete Facility">
+            <span class="icon-white icon-trash"> </span>
+        </button>
+    </div>
+</div>
+

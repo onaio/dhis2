@@ -1,0 +1,88 @@
+<table>
+	<tr>
+	    <td class="bold">$i18n.getString( "full_name" ):</td>
+	    <td>$encoder.htmlEncode( $patient.name )</td>
+	</tr>
+	<tr>
+	    <td class="bold">$i18n.getString( "gender" ):</td>
+	    <td>#if($patient.gender=='F')
+				<img src='images/female_small.png'>
+			#else
+				<img src='images/male_small.png'>
+			#end
+		</td>
+	</tr>    
+	<tr>
+	    <td class="bold">$i18n.getString( "date_of_birth" ):</td>
+	    <td>$format.formatDate( $patient.birthDate )</td>
+	</tr>
+	<tr>
+	    <td class="bold">$i18n.getString( "age" ):</td>
+	    <td>$encoder.htmlEncode( $patient.getAge() )</td>
+	</tr>    
+</table>
+
+<h4>$i18n.getString( "records_for" ) $encoder.htmlEncode( $programStageInstance.programStage.displayName ) </h4>
+
+<table class="mainPageTable">
+	<col id="noCol">
+	<col id="deCol">    
+	<col id="entryCol">
+	<col id="facilityCol">       
+	<tr>
+	    <th>$i18n.getString( "nr" )</th>
+	    <th>$i18n.getString( "data_element" )</th>                   
+	    <th>$i18n.getString( "value" )</th>
+	    <th>$i18n.getString( "provided_elsewhere" )</th>             
+	</tr>
+	
+	#set( $dataElementRowCount = 0 )
+	#set( $mark = 0 )
+	#set( $tabIndex = 1 )
+	
+	#foreach( $patientDataValue in $patientDataValues )
+	    #set( $dataElementRowCount = $dataElementRowCount + 1 )    
+	    #if( $mark == 1 )
+	        #set( $mark = 0 )
+	    #else
+	        #set( $mark = 1 )
+	    #end
+	            
+	    <tr #if( $mark == 0 ) style="background-color:#dddddd" #end>
+	        ##dataElementRowCount
+	        <td style="text-align:center">$dataElementRowCount</td>
+	            
+	        ##data element name
+	        <td>
+	            $encoder.htmlEncode( $patientDataValue.dataElement.name )            
+	        </td>        
+	           
+	        ##value        
+	        <td>        
+	            #if( $patientDataValue.dataElement.type == "bool" )
+	                #if( $patientDataValue.value == "true" )
+	                    $i18n.getString( "yes" ) 
+	                #elseif( $patientDataValue.value == "false" )
+	                    $i18n.getString( "no" )
+	                #end                                              
+	            #elseif( $patientDataValue.dataElement.type == "string"  && $patientDataValue.dataElement.isMultiDimensional() )                    
+	                #if( $patientDataValue.value )                       
+	                    #set( $optionValue = $optionValueMap.get( $patientDataValue.dataElement.id ) )
+	                    $encoder.htmlEncode( $optionValue )
+	                #end                          
+	            #else
+	                $!encoder.htmlEncode( $patientDataValue.value )
+	            #end
+	        </td> 
+	      
+	        ##providedByAnotherFacility                
+	        <td>            
+	            #if( !$patientDataValue.providedByAnotherFacility )
+					$!patientDataValue.programStageInstance.organisationUnit.name
+				#else
+					$i18n.getString("other_facility")
+	            #end                         
+	        </td>    
+	    </tr>    
+	#end
+</table>

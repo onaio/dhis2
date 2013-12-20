@@ -1,0 +1,19 @@
+
+<h3>$i18n.getString( "supportive_software" )</h3>
+
+<dl>
+	<dt>$i18n.getString( "web_browser" )</dt>
+	<dd><a href="http://www.google.com/chrome" target="blank">Google Chrome</a> - $i18n.getString( "chrome_description" )</dd>
+	
+	<dt>$i18n.getString( "pdf_reader" )</dt>
+	<dd><a href="http://www.foxitsoftware.com/pdf/reader/addons.php" target="blank">Foxit Reader</a> - $i18n.getString( "foxit_description" )</dd>
+	
+	<dt>$i18n.getString( "report_designer" )</dt>
+	<dd><a href="http://jasperforge.org/projects/ireport" target="blank">iReport</a> - $i18n.getString( "ireport_description" )</dd>
+	
+	<dt>$i18n.getString( "my_datamart" )</dt>
+	<dd><a href="http://dhis2.org/downloads#mydatamart" target="blank">MyDatamart</a> - $i18n.getString( "my_datamart_description" )</dd>
+	
+	<dt>$i18n.getString( "mobile_client" )</dt>
+	<dd><a href="http://dhis2.org/downloads#mobileclient" target="blank">Mobile client</a> - $i18n.getString( "mobile_client_description" )</dd>
+</dl>

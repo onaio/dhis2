@@ -1,0 +1,41 @@
+<form id='dataRecordingSelectForm' name='dataRecordingSelectForm' method='post'>
+
+<table class="mainPageTable" id='patientInfoDiv'> 
+	<tr>
+		<td valign="top">
+	<table>
+		#if( $auth.hasAccess( "dhis-web-caseentry", "accessPatientAttributes" ) )
+			<tr>            
+				<td class="bold">$i18n.getString( "full_name" ):</td>
+				<td>$!encoder.htmlEncode( $patient.name )<td>
+			</tr>
+			<tr>
+				<td class="bold">$i18n.getString( "gender" ):</td>
+				<td>#if($patient.gender=='F')
+						<img src='images/female_small.png'>
+					#else
+						<img src='images/male_small.png'>
+					#end
+				</td>
+			</tr>
+			<tr>
+				<td class="bold">$i18n.getString( "date_of_birth" ):</td>
+				<td>$format.formatDate( $patient.birthDate ) ($patient.getAge())<td>
+			</tr>
+		#else
+			#set($value="")
+			#foreach( $identifier in $patient.identifiers)
+				#if($!identifier.identifierType)
+				#else
+					#set($value=$identifier.identifier)
+				#end
+			#end
+			<tr>
+				<td class="bold">$i18n.getString('system_identifier'):</td>
+				<td>$value</td>
+			</tr>
+		#end
+		</table>
+	</tr>
+</table>
+</form>

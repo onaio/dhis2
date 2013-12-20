@@ -1,0 +1,87 @@
+<script type="text/javascript">
+	jQuery(document).ready(function(){	
+		tableSorter( 'categoryList' );	
+	});
+	
+	function showDataElementCategoryOptionDetails( categoryOptionId )
+	{
+		jQuery.post( 'getDataElementCategoryOption.action', { id: categoryOptionId } ,
+			function ( json ) {
+			
+				setInnerHTML( 'nameField', json.dataElementCategoryOption.name );  
+				setInnerHTML( 'codeField', json.dataElementCategoryOption.code ); 
+				setInnerHTML( 'conceptField', json.dataElementCategoryOption.concept ); 				
+					  
+				showDetails();
+		});
+	}
+	
+	function removeDataElementCategoryOption( categoryOptionId, categoryName )
+	{
+		removeItem( categoryOptionId, categoryName, i18n_confirm_delete, 'removeDataElementCategoryOption.action' );
+	}
+	
+	var i18n_confirm_delete = '$encoder.jsEscape( $i18n.getString( "confirm_delete_data_element_category_option" ) , "'" )';
+</script>
+
+<h3>$i18n.getString( "data_element_category_option_management" ) #openHelp( "dataElementCategoryOption" )</h3>
+
+<table class="mainPageTable">
+  <tr>
+    <td style="vertical-align:top">
+		<table width="100%">
+			<tr>
+				<td>#filterDiv( "categoryOption" )</td>
+				<td colspan="3" style="text-align:right"><input type="button" value="$i18n.getString( 'add_new' )" onclick="window.location.href='showAddDataElementCategoryOptionForm.action'"/></td>
+			</tr>
+		</table>
+      <table class="listTable" id="categoryList">
+          <col/>
+          <col width="120px"/>        
+          <thead>		 
+			  <tr>
+				<th>$i18n.getString( "name" )</th>
+				<th class="{sorter: false}">$i18n.getString( "operations" )</th>
+			  </tr>
+          </thead>
+          <tbody id="list">
+            #foreach( $dataElementCategoryOption in $dataElementCategoryOptions )
+            #if( $dataElementCategoryOption.id != $defaultCategory.id )
+              <tr id="tr${dataElementCategoryOption.id}">                
+                <td onclick="showDataElementCategoryOptionDetails( $dataElementCategoryOption.id )">$encoder.htmlEncode( $dataElementCategoryOption.displayName )</td>
+                <td style="text-align:right">
+					<a href="showUpdateDataElementCategoryOptionForm.action?id=$dataElementCategoryOption.id" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"/></a>
+					<a href="javascript:translate( 'DataElementCategoryOption', '$dataElementCategoryOption.id' )" title="$i18n.getString( 'translation_translate' )"><img src="../images/i18n.png" alt="$i18n.getString( 'translation_translate' )"/></a>
+				    <a href="javascript:removeDataElementCategoryOption( '$dataElementCategoryOption.id', '$encoder.jsEncode( $dataElementCategoryOption.name )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></a>
+					<a href="javascript:showDataElementCategoryOptionDetails( $dataElementCategoryOption.id )" title="$i18n.getString( 'show_details' )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"/></a>
+				</td>
+              </tr>
+			#end
+            #end
+          </tbody>
+
+        </table>
+		<p></p>
+		#parse( "/dhis-web-commons/paging/paging.vm" )
+    </td>
+		<td id="detailsData">
+
+            <div id="detailsArea">
+                <div id="hideDetailsArea">
+					<a href="javascript:hideDetails()" title="$i18n.getString( 'hide_details' )"><img src="../images/hide.png" alt="$i18n.getString( 'hide_details' )"/></a>
+				</div>
+				<p><label>$i18n.getString( "name" ):</label><br/><span id="nameField"></span></p>
+				<p><label>$i18n.getString( "code" ):</label><br/><span id="codeField"></span></p>
+				<p><label>$i18n.getString( "concept" ):</label><br/><span id="conceptField"></span></p>
+			</div>
+
+			<div id="warningArea">
+                <div id="hideDetailsArea">
+                    <a href="javascript:hideWarning()" title="$i18n.getString( 'hide_warning' )"><img src="../images/hide.png" alt="$i18n.getString( 'hide_warning' )"/></a>
+                </div>
+                <p><span id="warningField"></span></p>
+            </div>
+
+		</td>
+  </tr>
+</table>

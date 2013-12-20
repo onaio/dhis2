@@ -1,0 +1,147 @@
+<div id='listPatientDiv'>
+<table>
+	<tr>
+		<td class='text-column' >$i18n.getString( "search_result_matching_the_search_criteria" ):</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td id='searchInforTD'>
+			#if($!listAll)
+				$i18n.getString( "list_all_patients" )
+			#else
+				$i18n.getString( "search_patients" )
+			#end
+		</td>
+	</tr>	
+	
+	<tr>
+		<td class='text-column' >$i18n.getString( "total_result" ):</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>$!total</td>
+	</tr>
+</table>
+
+<br> 
+<table class="mainPageTable">
+<tr><td>
+<table class="listTable">  
+	<colgroup>
+		<col width="40"/>
+		#if( $auth.hasAccess( "dhis-web-caseentry", "accessPatientAttributes" ) )
+			#foreach( $identifierType in $identifierTypes) <col/> #end
+		#if( $identifierTypes.size()==0 ) <col/> #end
+		<col width="60"/>
+		<col width="110"/>
+		<col width="60"/>
+		#end
+		#if($mapPatientOrgunit.size()!=0) <col/> #end
+		<col/>
+		<col width="80"/>
+	</colgroup>	  
+	
+	<thead>
+	  <tr>
+		<th>#</th>
+		#if( $auth.hasAccess( "dhis-web-caseentry", "accessPatientAttributes" ) )
+			#foreach( $identifierType in $identifierTypes)
+				<th>$encoder.htmlEncode($identifierType.displayName)</th>
+			#end
+			
+			#if( $identifierTypes.size()==0 )
+				<th>$i18n.getString( "full_name" )</th>          
+			#end       
+			<th>$i18n.getString( "gender" )</th>
+			<th>$i18n.getString( "date_of_birth" )</th>
+			<th>$i18n.getString( "age" )</th> 
+			<th class="{sorter: false}">$i18n.getString( "phone_number" )</th>  
+		#else
+			<th>$i18n.getString('system_identifier')</th>
+		#end
+		
+		#if($mapPatientOrgunit.size()!=0)
+			<th>$i18n.getString( "hierachy_orgunit" )</th>
+		#end			
+		<th>$i18n.getString( "operations" )</th>
+	  </tr>
+	</thead>
+          
+	<tbody id="list">	
+	  #foreach( $patient in $patients )
+		<tr>
+			<td>
+				#set( $nr = ( ( $paging.getCurrentPage() - 1  ) * $paging.pageSize ) + $velocityCount )
+				$nr
+			</td>
+			
+			#if( $auth.hasAccess( "dhis-web-caseentry", "accessPatientAttributes" ) )
+				#set($value="")
+				#foreach( $identifierType in $identifierTypes)
+					#foreach( $identifier in $patient.identifiers)
+						#if($identifier.identifierType.id==$identifierType.id)
+							#set($value=$identifier.identifier)
+						#end
+					#end
+				#end
+				#if($value=="")
+					#set($value=$patient.name)
+				#end
+				<td style="cursor:pointer;" onclick="javascript:showUpdatePatientForm('$patient.id');">
+					<a>$encoder.htmlEncode($value)</a>
+				</td>
+				<td>			
+					$i18n.getString( $patient.gender )
+				</td>
+				<td>			
+					$format.formatDate( $patient.birthDate )
+				</td>
+				<td>            
+					$encoder.htmlEncode( $patient.getAge() )
+				</td>
+				<td>$!patient.phoneNumber</td>
+			#else
+				#set($value="")
+				#foreach( $identifier in $patient.identifiers)
+					#if($!identifier.identifierType)
+					#else
+						#set($value=$identifier.identifier)
+					#end
+				#end
+				<td style="cursor:pointer;" onclick="javascript:showUpdatePatientForm('$patient.id');">
+					<a>$value</a>
+				</td>
+			#end
+			
+			#if($mapPatientOrgunit.size()!=0)
+			<td>$!mapPatientOrgunit.get($patient.id)</td>
+			#end
+			<td>
+				<a href="javascript:showUpdatePatientForm('$patient.id');" title="$i18n.getString( 'data_entry' )"><img src="images/data_entry.png" alt="$i18n.getString( 'data_entry' )"></a>   
+				<a href="javascript:showPatientHistory('$patient.id')" title='$i18n.getString( "patient_details_and_history" )'><img src="../images/information.png" alt='$i18n.getString( "patient_details_and_history" )'></a>
+			</td>               				
+		</tr>
+	#end
+    </tbody>
+</table>
+</td></tr>
+<tr><td colspan="6">
+			<p></p>
+			<div class="paging-container">
+				#parse( "/dhis-web-commons/paging/paging.vm" )
+			</div>
+		</td>
+		<td></td>
+	</tr>
+</table>
+
+	<div id="detailsInfo"></div>
+	<span id="message"></span>
+</div>
+
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		setTableStyles();	
+	});
+	var i18n_patient_details_and_history = '$encoder.jsEscape( $i18n.getString( "patient_details_and_history" ) , "'" )';
+	var i18n_list_all_patients = '$encoder.jsEscape( $i18n.getString( "list_all_patients" ) , "'" )';
+	var i18n_search_patients = '$encoder.jsEscape( $i18n.getString( "search_patients" ) , "'" )';
+</script>

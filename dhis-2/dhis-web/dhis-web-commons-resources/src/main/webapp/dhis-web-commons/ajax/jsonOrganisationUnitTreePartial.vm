@@ -1,0 +1,5 @@
+{"organisationUnits": {
+#foreach( $unit in $organisationUnits )
+"${unit.id}":{"id":${unit.id},"n":"$!encoder.jsonEncode( ${unit.name} )",#if( $unit.parent )"pid":${unit.parent.id},#end"c":[#foreach( $child in $unit.sortedChildren )${child.id}#if( $velocityCount < $unit.children.size() ),#end#end]}
+#if( $velocityCount < $organisationUnits.size() ),#end#end
+}}

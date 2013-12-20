@@ -1,0 +1,56 @@
+
+<h3>$i18n.getString( "assign_validation_for_programs" ) </h3>
+<h4>$validationCriteria.name</h4>
+
+<form action='defineProgramsForValidationCriteria.action' method='post' onsubmit="selectAllById('programIds');">
+	<input type='hidden' id='criteriaId' name='criteriaId' value="$validationCriteria.id">
+	<table>
+		<colgroup>
+			<col style="width:400px;"/>
+			<col/>
+			<col style="width:400px;"/>
+		</colgroup>
+		<thead>
+			<tr>
+			  <th>$i18n.getString('available_program')</th>
+			  <th>$i18n.getString('filter')</th>
+			  <th>$i18n.getString('selected_program')</th>
+			</tr>
+		</thead>
+		<tr>
+			<td>
+				<select multiple id='avalableProgramIds' name='avalableProgramIds' size="15" style="width:100%;" ondblclick="moveSelectedById('avalableProgramIds', 'programIds');">
+					#foreach($p in $availablePrograms)
+					<option value='$p.id'>$p.name</option>
+					#end
+				</select>
+			</td>
+			<td width="42" align='center'>
+				<input type="button" value="&gt;" onclick="moveSelectedById('avalableProgramIds', 'programIds');" style="width:42px">
+				<input type="button" value="&lt;" onclick="moveSelectedById('programIds', 'avalableProgramIds');" style="width:42px"><br>
+				<input type="button" value="&gt;&gt;" onclick="moveAllById('avalableProgramIds', 'programIds');" style="width:42px"><br>
+				<input type="button" value="&lt;&lt;" onclick="moveAllById('programIds', 'avalableProgramIds');" style="width:42px">
+			</td>
+			<td>
+				<select multiple id='programIds' name='programIds' size="15" style="width:100%;" ondblClick="moveSelectedById('programIds', 'avalableProgramIds');">
+					#foreach($p in $selectedPrograms)
+					<option value='$p.id'>$p.name</option>
+					#end
+				</select>
+			</td>
+		</tr>
+
+		<tr>
+			<td>
+				<input type="submit"value="$i18n.getString('save')" style="width:10em">
+				<input type="button" onClick="window.location.href = 'validationCriteria.action';" value="$i18n.getString('cancel')" style="width:10em">
+			</td>
+			<td></td>
+			<td></td>
+		</tr>
+	</table>
+</form>
+
+<script>
+	var i18n_confirm_delete = '$encoder.jsEscape( $i18n.getString( "confirm_delete_patient" ) , "'" )';
+</script>

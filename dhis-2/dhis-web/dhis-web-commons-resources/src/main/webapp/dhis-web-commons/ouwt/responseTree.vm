@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<units>
+	<roots>
+	#foreach( $root in $roots )
+		<unit id="${root.id}" uid="${root.uid}" #if( $selected.contains( $root )) selected="true" #end>$encoder.xmlEncode( $root.name )</unit>
+	#end
+	</roots>
+
+	<children>
+	#foreach( $parent in $parents )
+		<parent parentId="$parent.id">
+		#foreach( $child in $childrenMap.get( $parent ) )
+  			<child id="${child.id}" uid="${child.uid}" hasChildren="$child.children.size()" #if( $selected.contains( $child )) selected="true" #end>$encoder.xmlEncode( $child.name )</child>
+		#end		
+  		</parent>
+	#end
+	</children>
+</units>

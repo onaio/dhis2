@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"
+  [<!ENTITY identifiableProperties SYSTEM "classpath://org/hisp/dhis/common/identifiableProperties.hbm">]
+  >
+<hibernate-mapping>
+  <class name="org.hisp.dhis.patient.Patient" table="patient">
+
+    <id name="id" column="patientid">
+      <generator class="native" />
+    </id>
+    &identifiableProperties;
+
+    <property name="name" column="name" length="230" />
+
+    <property name="birthDate" column="birthdate" />
+
+    <property name="deathDate" column="deathdate" />
+
+    <property name="registrationDate" column="registrationdate" not-null="true" />
+
+    <property name="isDead" column="isdead" />
+
+    <property name="gender" column="gender" length="5" />
+
+    <property name="phoneNumber" length="25" />
+
+    <property name="underAge" column="underage" />
+
+    <property name="dobType" column="dobType" />
+
+    <set name="identifiers" cascade="all">
+      <key column="patientid" />
+      <one-to-many class="org.hisp.dhis.patient.PatientIdentifier" />
+    </set>
+    
+    <set name="programInstances">
+      <key column="patientid" />
+      <one-to-many class="org.hisp.dhis.program.ProgramInstance" />
+    </set>
+    
+    <many-to-one name="representative" class="org.hisp.dhis.patient.Patient" column="representativeid"
+      foreign-key="fk_representativeid" />
+
+    <many-to-one name="organisationUnit" class="org.hisp.dhis.organisationunit.OrganisationUnit" column="organisationunitid"
+      foreign-key="fk_patient_organisationunitid" />
+
+    <many-to-one name="healthWorker" column="healthworkerid" class="org.hisp.dhis.user.User" foreign-key="fk_user_patientid" />
+
+  </class>
+</hibernate-mapping>

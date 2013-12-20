@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html manifest="$contextPath/mobile/app-cache">
+<!-- <html> -->
+
+<head>
+	<title>$i18n.getString( "DHIS2" )</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+
+	<link rel="stylesheet" href="$contextPath/dhis-web-mobile-resources/css/jquery.mobile.min.css" />
+
+    <script src="$contextPath/dhis-web-commons/javascripts/jQuery/jquery.min.js"></script>
+    <script src="$contextPath/dhis-web-commons/javascripts/dhis2/dhis2.util.js"></script>
+    <script src="$contextPath/dhis-web-commons/javascripts/dhis2/dhis2.array.js"></script>
+    <script src="$contextPath/dhis-web-commons/javascripts/underscore.min.js"></script>
+    <script src="$contextPath/dhis-web-mobile-resources/js/jquery.mobile.min.js"></script>
+    <script src="$contextPath/dhis-web-mobile-resources/js/dhis2.storage.js"></script>
+
+    <script>
+    $(document).bind('pageinit',function(){
+        $.mobile.ajaxEnabled = false;
+    });
+    </script>
+</head>
+<body>
+
+#if( !$page )
+  <p>$i18n.getString( "no_page_specified" )</p>
+#else
+  #parse( $page )
+#end
+
+</body>
+</html>

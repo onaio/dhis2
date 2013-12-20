@@ -1,0 +1,209 @@
+
+<script>
+    var markers = [];
+    var infoWindow;
+    var map;
+
+    var facilities = [
+        #foreach( $facility in $entity.facilities )
+        {
+            id: "$facility.uuid",
+            href: "$facility.href",
+            name: "$esc.escapeEcmaScript($facility.name)",
+            coordinates: "$facility.coordinates"
+        },
+        #end
+    ];
+
+    function loadMapsScript() {
+        if (!map) {
+            $.getScript('//maps.googleapis.com/maps/api/js?sensor=false&callback=mapsLoaded');
+        }
+    }
+
+    function mapsLoaded() {
+        $.getScript('$baseUrl/../../api-fred-resources/js/markerclusterer.min.js').success(initialize);
+    }
+
+    function initialize()
+    {
+        markers = [];
+        infoWindows = [];
+
+        var lats = 0.0;
+        var lngs = 0.0;
+        var n = 0;
+
+        $.each(facilities, function (idx, facility) {
+            if (facility.coordinates !== undefined && JSON.parse(facility.coordinates).length > 0) {
+                var coords = JSON.parse(facility.coordinates);
+                var latlng = new google.maps.LatLng(coords[1], coords[0]);
+                var name = facility.name;
+                var id = facility.uuid;
+                var href = facility.href;
+
+                lats += coords[1];
+                lngs += coords[0];
+                n += 1;
+
+                var marker = new google.maps.Marker({
+                    position: latlng,
+                    title: name
+                });
+
+                markers.push(marker);
+
+                var infoWindow= new google.maps.InfoWindow({
+                    content: "<div>" + "<b>" + name + "</b><br/>Latitude " + coords[1] + "<br/> Longitude " + coords[0] +
+                            "<br/><br/><a href='" + href + "'>More information</a></div>"
+                });
+
+                infoWindows.push(infoWindow);
+            }
+        });
+
+        lats = lats / n;
+        lngs = lngs / n;
+
+        var latlng = new google.maps.LatLng(lats, lngs);
+
+        var options = {
+            zoom: 8,
+            center: latlng,
+            disableDefaultUI: true,
+            panControl: true,
+            zoomControl: true,
+            mapTypeControl: true,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            mapTypeControlOptions: {
+              style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+            }
+        };
+
+        map = new google.maps.Map(document.getElementById('mapTarget'), options);
+
+        $.each(markers, function (idx, item) {
+            google.maps.event.addListener(item, 'click', function() {
+                if(!infoWindow)
+                {
+                    infoWindow = new google.maps.InfoWindow();
+                }
+
+                infoWindow.setContent( infoWindows[idx].getContent());
+                infoWindow.open(map, item);
+            });
+        });
+
+        var markerCluster = new MarkerClusterer(map, markers);
+    }
+
+    $(function () {
+        $('.activateButton').click(function () {
+            if (confirm('Are you sure you want to activate this facility?')) {
+                var id = $(this).parent().parent().parent().data('facility-id');
+
+                $.ajax({
+                    url: 'facility-service/' + id + '/activate',
+                    type: 'POST',
+                    async: false
+                }).complete(function () {
+                    window.location.reload();
+                });
+            }
+        });
+
+        $('.deactivateButton').click(function () {
+            if (confirm('Are you sure you want to de-activate this facility?')) {
+                var id = $(this).parent().parent().parent().data('facility-id');
+
+                $.ajax({
+                    url: 'facility-service/' + id + '/deactivate',
+                    type: 'POST',
+                    async: false
+                }).complete(function () {
+                    window.location.reload();
+                });
+            }
+        });
+
+        $('#mapLink').on('show', function () {
+            loadMapsScript();
+        });
+    });
+</script>
+
+<div class='btn-group pull-right' style='margin-left: 10px;'>
+    <a href='facilities.json' class='btn btn-small btn-info' style='margin-bottom: 5px;'>
+        <span class='icon-white icon-download'> </span> JSON
+    </a>
+</div>
+
+<div class='tabbable'>
+    <ul class='nav nav-tabs'>
+        <li class='active'><a id='listLink' href='#listTab' data-toggle='tab'><span class='icon-list-alt'> </span> List</a></li>
+        <li><a id='mapLink' href='#mapTab' data-toggle='tab'><span class='icon-globe'> </span> Map</a></li>
+    </ul>
+
+    <div class='tab-content'>
+
+        <div class='tab-pane active' id='listTab'>
+            #listContent()
+        </div>
+
+        <div class='tab-pane' id='mapTab'>
+            #mapContent()
+        </div>
+    </div>
+
+</div>
+
+#macro( listContent )
+<table class='table table-bordered table-striped table-condensed'>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+        #foreach( $facility in $entity.facilities )
+        <tr data-facility-id='$facility.uuid'>
+            <td class='facility-name'><a href='$facility.href'>$esc.escapeHtml4($facility.name)</a></td>
+
+            <td class='facility-actions' style='width: 1px;'>
+                <div class='btn-group'>
+                    #if( $facility.active )
+                        <button #if(!$canUpdate)disabled#end style='width: 44px;' class='deactivateButton btn btn-mini btn-success' title='Deactivate Facility'>
+                            <span class='icon-white icon-ok-circle'> </span>
+                        </button>
+                    #else
+                        <button #if(!$canUpdate)disabled#end style='width: 44px;' class='activateButton btn btn-mini btn-inverse' title='Activate Facility'>
+                            <span class='icon-white icon-ban-circle'> </span>
+                        </button>
+                    #end
+                    <button #if(true)disabled#end disabled='disabled' style='width: 42px;' class='deleteButton btn btn-mini btn-danger' title='Delete Facility'>
+                        <span class='icon-white icon-trash'> </span>
+                    </button>
+                </div>
+            </td>
+        </tr>
+        #end
+    </tbody>
+</table>
+
+<div class="pagination pagination-right">
+    <ul>
+        #set( $nextOffset = $entity.meta.offset + $entity.meta.limit)
+        #set( $prevOffset = $entity.meta.offset - $entity.meta.limit)
+        <li class="#if($prevDisabled)disabled#end"><a class="prev-button" href="facilities?offset=$prevOffset">Prev</a></li>
+        <li class="#if($nextDisabled)disabled#end"><a class="next-button" href="facilities?offset=$nextOffset">Next</a></li>
+    </ul>
+</div>
+#end
+
+#macro( mapContent )
+<div id="mapDiv" class='span12 well' style='padding: 4px;'>
+    <div style='height: 680px;' id='mapTarget'></div>
+</div>
+#end

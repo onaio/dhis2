@@ -1,0 +1,89 @@
+<script type="text/javascript" src="javascript/addValidationCriteria.js"></script>																
+
+<h3>$i18n.getString( "create_validation_criteria" )</h3>
+<form id="validationCriteriaForm" action="addValidationCriteria.action" method="post" >
+<table>
+	<tr><th colspan="3">$i18n.getString('validation_criteria_details')</th></tr>
+    <tr>
+		<td><label>$i18n.getString('name') <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+		<td colspan="2"><input type='text' id='name' name='name' style='width: 40em' class="{validate:{required:true,rangelength:[2,160]}}"/></td>
+    </tr>
+    <tr>
+		<td><label>$i18n.getString('description') <em title="$i18n.getString( 'required' )" class="required">*</em></label></label></td>
+		<td colspan="2"><input type='text' id='description' name='description' style='width: 40em' class="{validate:{required:true,rangelength:[2,160]}}"></td>
+	</tr>
+    <tr>
+		<td><label>$i18n.getString('criteria')<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+		<td>	  
+		<table>
+			<tr>
+				<td>
+				<!-- Property -->
+					<select id='property' name='property' style='width: 16em' onChange="showDivValue();">
+						<option value="" selected="selected">[$i18n.getString( "please_select" )]</option>
+						<option value="gender">$i18n.getString( "gender" )</option>
+						<option value="dobType">$i18n.getString( "dob_type" )</option>
+						<option value="birthDate">$i18n.getString( "date_of_birth" )</option>
+						<option value="integerValueOfAge">$i18n.getString( "age" )</option>
+					</select>
+
+					<!-- Operator -->
+					<select id='operator' name='operator' style='width: 7em'>
+						<option value='-1'>$i18n.getString('operator_less_then')</option>
+						<option value='0'>$i18n.getString('operator_equal_to')</option>
+						<option value='1'>$i18n.getString('operator_greater_then')</option>
+					</select>
+				</td>
+			   <td>
+				<!-- Displayed when no criteria is selected -->
+				<input type="text" style="width:16em" id='emptyCriteria'>
+				
+				<!-- gender -->
+				<div id="genderDiv" style="display:none">
+					<select id='genderValue' name='genderValue' onChange="fillValue(this.value);" style="width: 16em">
+						<option value="" selected="selected">[$i18n.getString( "please_select" )]</option>
+						<option value="M" >$i18n.getString( "male" )</option>
+						<option value="F">$i18n.getString( "female" )</option>
+						<option value="T">$i18n.getString( "transgender" )</option>
+					</select>
+				</div>
+				
+				<!-- dobType -->
+				<div id="dobTypeDiv" style="display:none ">
+					<select type="text" id='dobTypeValue' name='dobTypeValue' onChange="fillValue(this.value);" style="width: 16em">
+						<option value="" selected="selected">[$i18n.getString( "please_select" )]</option>
+						<option value="V" >$i18n.getString( "verified" )</option>
+						<option value="D" >$i18n.getString( "declared" )</option>
+						<option value="A" >$i18n.getString( "approximated" )</option>
+					</select>
+				</div>
+				
+				<!-- age -->
+				<div id="integerValueOfAgeDiv" style="display:none ">
+					<input type="text" id='integerValueOfAgeValue' name='integerValueOfAgeValue' onChange="fillValue(this.value);"  class="{validate:{digits:true,rangelength:[1,2]}}" style="width: 16em"/>
+				</div>
+				
+				<!-- birthDate -->
+				<div id="birthDateDiv" style="display:none ">
+					<input type="text" id="birthDateValue" name="birthDateValue" onChange="fillValue(this.value);" style="width:215px"/>			
+					<script type="text/javascript">
+						datePickerValid( 'birthDateValue' );
+					</script> 
+				</div>
+				
+				<!-- value -->
+				<input type="hidden" id="value" name="value" class="{validate:{required:true,rangelength:[1,160]}}"/>
+				</td>
+			</tr>
+		</table>
+		</td>
+    </tr>
+    <tr>
+		<td>&nbsp;</td>
+		<td colspan="2">
+			<input type="submit" value="$i18n.getString('save')" style="width:10em"/>
+			<input name="button" type="button" style="width:10em" onclick="javascript:window.location.href= 'validationCriteria.action'" value="$i18n.getString('cancel')"/>
+		</td>
+    </tr>
+  </table>
+</form>

@@ -1,0 +1,79 @@
+<script>
+	hideById('mainLinkLbl');
+	jQuery('[name=mainPagelink]').html(i18n_main_form_link);
+</script>
+
+<h3>
+	<a name="mainPagelink" href="javascript:onClickBackBtn();">$i18n.getString( 'patient_management' )</a>
+	&#8226; <a href="javascript:showPatientDashboardForm($patientId);">$i18n.getString( 'patient_dashboard' )</a>
+	&#8226; $i18n.getString( "change_location" )
+</h3>
+	
+<table>
+	#set($value="")
+	#set($flag=false)
+	#foreach( $identifier in $patient.identifiers)
+		#if($!identifier.identifierType)
+			#set($value=$identifier.identifier)
+		#else
+			#set($systemId=$identifier.identifier)
+		#end
+	#end
+	#if($value=="")
+		#set($value=$!patient.name)
+	#else
+		#set($flag=true)
+	#end
+	#if($value=="")
+		#set($value=$systemId)
+	#end
+					
+	#if($patient.name=='')
+	<tr>
+		<td>
+			#if($flag==true)
+				$i18n.getString('identifier'):
+			#else
+				$i18n.getString('full_name'):
+			#end
+		</td>
+		<td>$value</td>
+	</tr>
+	#end
+	<tr>
+		<td>$i18n.getString('gender'):</td>
+		<td>
+			#if($patient.gender=='F')
+				<img src='images/female_small.png'>
+			#else
+				<img src='images/male_small.png'>
+			#end
+		</td>
+	</tr>
+	<tr>
+		<td>$i18n.getString('date_of_birth'):</td>
+		<td>$!format.formatDate($!patient.birthDate)</td>
+	</tr>
+	<tr>
+		<td>$i18n.getString('age'):</td>
+		<td>$!patient.getAge()</td>
+	</tr>
+</table>
+
+<form method='post'>
+	<table>
+		<tr>
+			<td>
+				#organisationUnitSelectionTree( false, false, true )
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<input type="button" class='button' value="$i18n.getString('save')" onclick='registerPatientLocation( "$patientId" )'>
+				<input type='button' class="button" value="$i18n.getString( 'cancel' )" onclick="backPreviousPage( $patientId )" />
+			</td>
+			<td></td>
+			<td></td>
+		</tr>
+	</table>
+</form>

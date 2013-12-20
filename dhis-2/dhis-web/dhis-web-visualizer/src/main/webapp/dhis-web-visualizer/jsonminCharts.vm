@@ -1,0 +1,1 @@
+#set( $size = $object.size() ){"charts":[#foreach( $chart in $object ){"id":"$!{chart.uid}","name":"$!encoder.jsonEncode(${chart.name})","lastUpdated":"$!{chart.lastUpdated}","userId":"$!{chart.user.id}"}#if( $velocityCount < $size ),#end#end]}

@@ -1,0 +1,133 @@
+#parse("/dhis-web-maintenance-mobile/smscommand/validate_javascript.vm")
+
+<script langauge="Javascript">
+
+    function prepSubmit(){
+    
+      if(VALIDATION_ERRORS > 0){
+        alert("$i18n.getString( "sms_command_validation_alert" )");
+        return;
+      }
+ 
+      var selectedDataOptions = '{"codes":[';      
+      $("#codes input").each(function(){
+            selectedDataOptions += '{"dataElementId" :' + $(this).attr('name').split('.')[0] +  ',';  
+            selectedDataOptions += '"optionId" :' + $(this).attr('name').split('.')[1] + ',';
+            selectedDataOptions += '"code" :"' + $(this).val() + '"},';
+            $(this).attr('name',''); // avoid error in struts 
+      });
+      selectedDataOptions += ']}';
+     
+      $("#codeDataelementOption").val(selectedDataOptions);
+      $("#updateSMSCommand").submit(); 
+
+    }
+  
+    
+</script>
+
+<h3>$i18n.getString( "edit_command" )</h3>
+
+<form id="updateSMSCommand" name="updateSMSCommand" action="saveEditSMSCommandForm.action" method="post">
+	<table>
+	<thead>
+      <tr>
+        <th colspan="2">$i18n.getString( "command_details" )</th>
+      </tr>
+    </thead>
+		<tr>
+			<td>
+				<input type="hidden" value="$selectedCommandID" name="selectedCommandID" />
+			</td>
+		</tr>
+		<tr>
+			<td>$i18n.getString( "name" )</td>
+			<td><input type="text" name="name" id="name" value="$smsCommand.name" style="width:20em" class="validate" /></td>
+		</tr>
+		<tr>
+			<td>$i18n.getString( "parser" )</td>
+			<td>#if($smsCommand.parserType) $smsCommand.parserType #end</td>
+		</tr>
+		
+		#if( $smsCommand.parserType == 'KEY_VALUE_PARSER' || $smsCommand.parserType == 'J2ME_PARSER' )
+		<tr>
+			<td>$i18n.getString( "dataset" )</td>
+			<td>#if($smsCommand.dataset.name) $smsCommand.dataset.name #end</td>
+		</tr>
+		
+		<tr>
+	       <td>Use current period for reporting</td>
+		   <td><input type="checkbox" name="currentPeriodUsedForReporting" #if($smsCommand.currentPeriodUsedForReporting) checked #end /></td>
+		</tr>   
+
+        <tr>
+			<td>$i18n.getString( "code_value_separator" )</td>
+			<td>
+				<input type="text"  #if($smsCommand.separator) value="$smsCommand.separator" #end name="separator" style="width:20em" class="validate" />
+			</td>
+		</tr> 
+		#elseif( $smsCommand.parserType == 'ALERT_PARSER' || $smsCommand.parserType == 'UNREGISTERED_PARSER' )
+		<tr>
+			<td>$i18n.getString( "userGroup" )</td>
+			<td>
+				<select name="userGroupID" >
+				#foreach( $userGroup in $userGroupList )
+					<option value="$userGroup.id" #if($smsCommand.userGroup == $userGroup) selected #end>$userGroup.name</option>
+				#end
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td style="width:130px">Confirm Message: </td>
+			<td><textarea cols="35" type="text" name="receivedMessage">#if($smsCommand.receivedMessage)$smsCommand.receivedMessage#end</textarea></td>
+		</tr>
+		#end
+        <tr>
+            <td style="width:130px">$i18n.getString( "no_codes_message" )</td>
+            <td><textarea cols="35" type="text" name="defaultMessage">#if($smsCommand.defaultMessage)$smsCommand.defaultMessage#end</textarea></td>
+        </tr>
+        
+	</table>
+	
+	
+	</br>
+	</br>
+	#if( $smsCommand.parserType == 'KEY_VALUE_PARSER' || $smsCommand.parserType == 'J2ME_PARSER' )
+    <table id="codes">
+		<col style="width: 450px"/>
+    <col/>
+    <col style="width: 450px"/>
+    <thead>
+      <tr>
+        <th>$i18n.getString( "data_element_category_combination")</th>
+		<th>$i18n.getString( "code" )</th>
+      </tr>
+    </thead>
+         #foreach( $dataElement in $dataElements)
+            #if ($dataElement.categoryCombo && $dataElement.categoryCombo.sortedOptionCombos) 
+                   #foreach($x in $dataElement.categoryCombo.sortedOptionCombos)    
+                       #set ($str = ""+$dataElement.id+""+$x.id)
+                       <tr>
+                           <td>
+                               $dataElement.name $x.name
+                           </td>
+                           <td>
+                               <input type="text" name="$dataElement.id.$x.id" value='$!codes[$str]' class="validate">
+                           </td>
+                       </tr>
+                   #end
+            #else
+            <tr>
+               <td>$dataElement.name</td>
+               <td><input type="text" name="$dataElement.id"></td>   
+            </tr>         
+            #end  
+         #end
+    </table>
+    #end
+
+	<br/>	
+    <input type="hidden" name="codeDataelementOption" id="codeDataelementOption" />
+    <input  type="button" style="width: 100px" onclick="prepSubmit()" value="$i18n.getString( "save" )" />
+    <input type="button" id ="btnBack" name ="btnBack" value="Back" style="width:8em" onclick="window.location.href='SMSCommands.action'"/>
+</form>
